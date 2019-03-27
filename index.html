@@ -48,7 +48,7 @@
   </body>
 
   <script type="text/javascript">
-    function FormInputController(inputCallback) {}
+    function FormInputController() {}
     FormInputController.prototype.formId = undefined;
     FormInputController.prototype.inputId = undefined;
     FormInputController.prototype.eventType = "input";
@@ -142,7 +142,10 @@
     };
 
     function UnitTestGameInputController() {
+	    // Instantiate the game input controller.
       gic = new GameInputController();
+
+	    // Initialize game input controller.
       let fid = document.getElementById("guessed-letter-form");
       let uid = document.getElementById("guessed-letter-input");
       let eventType = "input";
@@ -159,40 +162,57 @@
         wTimeoutmSecs,
         lTimeoutmSecs
       );
+
+	    // Wire up the input and timeout callbacks appropriate
+	    // for your game.
+
       gic.inputCallback = getInputCallback(gic);
       gic.timeoutCallback = getTimeoutCallback(gic);
 
       console.log("UnitTestGameInputController: gic = ", gic);
-
       let stateCounter = 0;
 
+	    // Enable input events.
       gic.enableInputListener();
       gic.inputId.focus();
+
+
+	    // Define the input callback for your game.
 
       function getInputCallback(gic) {
         function innerCallback(e) {
           console.log("innerCallback");
           let uid = this; // 'this' is element owning listener
+
+	        // Disable input events.
           gic.disableInput();
-          let newState = updateState(e); // update model state
+
+	        // Update the state of your game.
+          let newState = updateState(e);
+
           let sid = document.getElementById("result");
           switch (newState) {
             case "win":
+		          // Process win case.
               newState = "reset";
               sid.textContent="you won";
               setTimeout(gic.timeoutCallback, gic.winTimeoutmSecs);
               break;
             case "loss":
+		          // Process loss case.
               newState = "reset";
               sid.textContent="you lost";
               setTimeout(gic.timeoutCallback, gic.lossTimeoutmSecs);
               break;
             default:
+		          // Re-enable input listener otherwise.
               gic.enableInput();
           }
         }
         return innerCallback;
       }
+
+	    // Logic to update your game's state/model.
 
       function updateState(e) {
         let state = "";
@@ -209,20 +229,25 @@
         return state;
       }
 
+	    // Logic to run between (win/loss) rounds of play.
+
       function getTimeoutCallback(gic) {
         function innerCallback() {
           //
-          // Update the timeout payload we app-specific logic here.
+          // Update with app-specific logic here.
           //
           console.log("timeout");
           let sid = document.getElementById("result");
           sid.textContent="";
+
+	        // Re-enable input events for next round of play.
           gic.enableInput();
         }
         return innerCallback;
       }
     }
 
+	  // Run unit tests.
     UnitTestGameInputController();
   </script>
 </html>
