@@ -94,12 +94,6 @@ GameInputController.prototype.init = function(
   this.winTimeoutmSecs = winTimeoutmSecs;
   this.lossTimeoutmSecs = lossTimeoutmSecs;
 };
-GameInputController.prototype.getTimeoutmSecs = function() {
-  return this.timeoutmSecs;
-};
-GameInputController.prototype.setTimeoutmSecs = function(mSecs) {
-  this.timeoutmSecs = mSecs;
-};
 
 //============================================================================
 
