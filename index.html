@@ -11,7 +11,7 @@
       <form id="guessed-letter-form">
         <input type="text" id="guessed-letter-input" placeholder="" />
       </form>
-      start typing letters...<span id="result"></span>
+      start typing letters...<span id="results"></span>
       <hr />
       <p>
        
@@ -73,11 +73,7 @@
       if (this.hideViewOnDisable) {
         this.enableInputView();
       }
-      this.enableInputListener(
-        this.inputId,
-        this.eventType,
-        this.inputCallback
-      );
+      this.enableInputListener();
     };
     FormInputController.prototype.enableInputView = function() {
       console.log("fic: enableInputView");
@@ -93,13 +89,9 @@
     };
     FormInputController.prototype.disableInput = function() {
       console.log("fic: disableInput");
-      this.disableInputListener(
-        this.inputId,
-        this.eventType,
-        this.inputCallback
-      );
+      this.disableInputListener();
       if (this.hideViewOnDisable) {
-        this.disableInputView(this.inputId);
+        this.disableInputView();
       }
     };
     FormInputController.prototype.disableInputView = function() {
@@ -112,6 +104,7 @@
     };
 
     function GameInputController() {}
+    GameInputController.prototype.resultsId = undefined;
     GameInputController.prototype = new FormInputController();
     GameInputController.prototype.__proto__ = FormInputController.prototype;
     GameInputController.prototype.timeoutCallback = undefined;
@@ -120,6 +113,7 @@
     GameInputController.prototype.init = function(
       formId,
       inputId,
+      resultsId,
       eventType,
       hideViewOnDisable,
       reFocusOnUnhide,
@@ -128,6 +122,7 @@
     ) {
       this.formId = formId;
       this.inputId = inputId;
+      this.resultsId = resultsId;
       this.eventType = eventType;
       this.hideViewOnDisable = hideViewOnDisable;
       this.reFocusOnUnhide = reFocusOnUnhide;
@@ -149,6 +144,7 @@
       // Initialize game input controller.
       let fid = document.getElementById("guessed-letter-form");
       let uid = document.getElementById("guessed-letter-input");
+      let rid = document.getElementById("results");
       let eventType = "input";
       let hideViewOnDisable = true;
       let reFocusOnUnhide = true;
@@ -157,6 +153,7 @@
       gic.init(
         fid,
         uid,
+        rid,
         eventType,
         hideViewOnDisable,
         reFocusOnUnhide,
@@ -196,13 +193,13 @@
             case "win":
               // Process win case.
               newState = "reset";
-              sid.textContent="you won";
+              gic.resultsId.textContent="you won";
               setTimeout(gic.timeoutCallback, gic.winTimeoutmSecs);
               break;
             case "loss":
               // Process loss case.
               newState = "reset";
-              sid.textContent="you lost";
+              gic.resultsId.textContent="you lost";
               setTimeout(gic.timeoutCallback, gic.lossTimeoutmSecs);
               break;
             default:
@@ -238,8 +235,7 @@
           // Update with app-specific logic here.
           //
           console.log("timeout");
-          let sid = document.getElementById("result");
-          sid.textContent="";
+          gic.resultsId.textContent="";
 
           // Re-enable input events for next round of play.
           gic.enableInput();
